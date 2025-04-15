@@ -2,6 +2,7 @@ package control;
 
 import adt.ArrayList;
 import entity.Student;
+import utility.SearchUtil;
 import entity.SkillProficiency;
 
 public class ApplicantManager {
@@ -99,4 +100,59 @@ public class ApplicantManager {
         }
         return null;
     }
+
+    public String filterByExperience(int minExperience) {
+        StringBuilder result = new StringBuilder();
+        boolean found = false;
+    
+        for (int i = 0; i < applicants.size(); i++) {
+            Student student = applicants.get(i);
+            if (student.getExperience() >= minExperience) {
+                result.append(student.toString()).append("\n");
+                found = true;
+            }
+        }
+    
+        return found ? result.toString() : "No applicants found with experience >= " + minExperience + " years.";
+    }
+
+    public String searchByLocation(String location) {
+        StringBuilder result = new StringBuilder();
+        boolean found = false;
+    
+        for (int i = 0; i < applicants.size(); i++) {
+            Student student = applicants.get(i);
+            String[] words = student.getLocation().toLowerCase().split("\\s+");
+            for (String word : words) {
+                if (SearchUtil.fuzzySearch(word, location.toLowerCase(), 2)) {
+                    result.append(student.toString()).append("\n");
+                    found = true;
+                    break; 
+                }
+            }
+        }
+    
+        return found ? result.toString() : "No applicants found in location: " + location;
+    }
+    
+    
+
+    public String searchByName(String name) {
+        StringBuilder result = new StringBuilder();
+        boolean found = false;
+
+        for (int i = 0; i < applicants.size(); i++) {
+            Student student = applicants.get(i);
+            if (SearchUtil.fuzzySearch(student.getName().toLowerCase(), name.toLowerCase(), 3)) {
+                result.append(student.toString()).append("\n");
+                found = true;
+            }
+        }
+
+        return found ? result.toString() : "No applicants found matching name: " + name;
+    }
+
+    
+    
+    
 }
