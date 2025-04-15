@@ -1,6 +1,8 @@
 package boundary;
 
 import control.JobManager;
+import doa.JobPostingInitializer;
+import utility.SearchUtil;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -15,7 +17,8 @@ public class JobPostingUI {
         System.out.println("2. Remove JobPosting");
         System.out.println("3. Update JobPosting");
         System.out.println("4. List All JobPostings");
-        System.out.println("5. Exit");
+        System.out.println("5. Search JobPostings");
+        System.out.println("6. Exit");
     }
 
     public void run() {
@@ -39,14 +42,21 @@ public class JobPostingUI {
                     listAllJobPostings();
                     break;
                 case 5:
+                    searchJobPostingByTitle();
+                    break;
+                case 6:
                     System.out.println("Exiting JobPosting!");
                     break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
                     input.nextLine();
             }
-        } while (choice != 5);
+        } while (choice != 6);
 
+    }
+
+    public JobPostingUI() {
+        JobPostingInitializer.initialize(jobManager); 
     }
 
     public static void main(String[] args) {
@@ -262,6 +272,37 @@ public class JobPostingUI {
         jobManager.listAllJobPostings();
     }
 
+
+    private void searchJobPostingByTitle() {
+        input.nextLine(); 
+        System.out.print("Enter title to search for: ");
+        String query = input.nextLine().toLowerCase();
+    
+        System.out.print("Enter fuzzy threshold (e.g. 2): ");
+        int threshold = input.nextInt();
+        input.nextLine(); 
+    
+        boolean found = false;
+        for (var job : jobManager.getJobPostings()) {
+            String jobTitle = job.getTitle().toLowerCase();
+            String[] words = jobTitle.split("\\s+"); 
+    
+            for (String word : words) {
+                if (SearchUtil.fuzzySearch(query, word, threshold)) {
+                    System.out.println("\nMatched Job Posting:");
+                    System.out.println(job);
+                    found = true;
+                    break; 
+                }
+            }
+        }
+    
+        if (!found) {
+            System.out.println("No job postings matched your query.");
+        }
+    }
+    
+    
     // getter
     public JobManager getJobManager() {
         return jobManager;
