@@ -3,7 +3,9 @@ package boundary;
 import java.util.Scanner;
 import adt.ArrayList;
 import control.CompanyManager;
+import entity.Company;
 import entity.JobPosting;
+import utility.SearchUtil;
 
 
 
@@ -74,6 +76,7 @@ public class CompanyUI {
         return location;
 
     }
+    
 
     private ArrayList<JobPosting> getInputJobPostings() {
         JobPostingUI jobPostingUI = new JobPostingUI();
@@ -188,7 +191,97 @@ public class CompanyUI {
     }
 
     public void filterCompanies() {
-        // TODO: Implement company filtering logic
-
+        System.out.println("\nFilter Companies Menu:");
+        System.out.println("1. Filter by Company Name");
+        System.out.println("2. Filter by Location");
+        System.out.println("3. Search Company Name (Fuzzy Match)");
+        System.out.println("4. Exit");
+        System.out.print("Enter your choice: ");
+    
+        int choice = input.nextInt();
+        input.nextLine(); // clear buffer
+    
+        switch (choice) {
+            case 1:
+                filterByName();
+                break;
+            case 2:
+                filterByLocation();
+                break;
+            case 3:
+                searchCompanyByName(); 
+                break;
+            case 4:
+                System.out.println("Exiting filter menu!");
+                break;
+            default:
+                System.out.println("Invalid choice. Please try again.");
+                break;
+        }
     }
+    
+
+    private void filterByName() {
+        System.out.print("Enter company name to filter: ");
+        String name = input.nextLine();
+        ArrayList<Company> filteredCompanies = companyManager.filterCompaniesByName(name);
+
+        if (filteredCompanies.isEmpty()) {
+            System.out.println("No companies found with the specified name.");
+        } else {
+            System.out.println("Companies found with the name \"" + name + "\":");
+            for (Company company : filteredCompanies) {
+                System.out.println(company); 
+            }
+        }
+    }
+
+    private void filterByLocation() {
+        System.out.print("Enter company location to filter: ");
+        String location = input.nextLine();
+        ArrayList<Company> filteredCompanies = companyManager.filterCompaniesByLocation(location);
+
+        if (filteredCompanies.isEmpty()) {
+            System.out.println("No companies found in the specified location.");
+        } else {
+            System.out.println("Companies found in the location \"" + location + "\":");
+            for (Company company : filteredCompanies) {
+                System.out.println(company); 
+            }
+        }
+    }
+    
+
+    private void searchCompanyByName() {
+        System.out.print("Enter company name to search: ");
+        String query = input.nextLine().toLowerCase();
+    
+        System.out.print("Enter fuzzy threshold (e.g. 2): ");
+        int threshold = input.nextInt();
+        input.nextLine(); // clear buffer
+    
+        ArrayList<Company> matchedCompanies = new ArrayList<>();
+    
+        for (Company company : companyManager.getCompanies()) {
+            String[] words = company.getName().toLowerCase().split("\\s+");
+            for (String word : words) {
+                if (SearchUtil.fuzzySearch(query, word, threshold)) {
+                    matchedCompanies.add(company);
+                    break; 
+                }
+            }
+        }
+    
+        if (matchedCompanies.isEmpty()) {
+            System.out.println("No companies matched your query.");
+        } else {
+            System.out.println("\nMatched Companies:");
+            for (Company company : matchedCompanies) {
+                System.out.println(company); 
+            }
+        }
+    }
+    
+
+
 }
