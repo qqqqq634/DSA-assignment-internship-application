@@ -233,7 +233,43 @@ public class ApplicantProfileUI {
     }
 
     public void filterApplicantProfiles() {
-        // TODO: Implement applicant profile filtering logic
+        int choice;
+        do {
+            System.out.println("\nFilter Applicant Profiles By:");
+            System.out.println("1. Search Name");
+            System.out.println("2. Search Location");
+            System.out.println("3. Minimum Years of Experience");
+            System.out.println("4. Exit");
+            System.out.print("Enter your choice: ");
+            
+            choice = input.nextInt();
+            input.nextLine(); // clear buffer
+    
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter name to search: ");
+                    String name = input.nextLine();
+                    System.out.println(applicantManager.searchByName(name));
+                    break;
+                case 2:
+                    System.out.print("Enter location to search: ");
+                    String location = input.nextLine();
+                    System.out.println(applicantManager.searchByLocation(location));
+                    break;
+                case 3:
+                    System.out.print("Enter minimum years of experience: ");
+                    int minExp = input.nextInt();
+                    input.nextLine(); // clear buffer
+                    System.out.println(applicantManager.filterByExperience(minExp));
+                    break;
+                case 4:
+                    System.out.println("Returning to main menu...");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        } while (choice != 4);
     }
+    
 
 }
